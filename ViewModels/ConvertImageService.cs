@@ -2,12 +2,12 @@ using System.Diagnostics;
 using System;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-using System.IO;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Drawing;
 using SixLabors.ImageSharp.Drawing.Processing;
+using System.Runtime.InteropServices;
 
 namespace apr.ViewModels;
 
@@ -21,12 +21,15 @@ public class NoseOverlayService
         {
             // 1. detect_nose 실행
             Console.WriteLine("image path {0}", imagePath);
+            string exeName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                ? "detect_nose.exe"
+                : "detect_nose";
             string datPath = System.IO.Path.Combine(imageServiceDir, "shape_predictor_68_face_landmarks.dat");
             var process = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName = System.IO.Path.Combine(imageServiceDir, "detect_nose"),
+                    FileName = System.IO.Path.Combine(imageServiceDir, exeName),
                     Arguments = $"{imagePath} {datPath}",
                     RedirectStandardOutput = true,
                     UseShellExecute = false,

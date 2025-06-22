@@ -1,9 +1,9 @@
 using System;
 using apr.ViewModels;
-using DotNetEnv;
-using Avalonia.Controls;
 using System.ComponentModel;
 using System.IO;
+using Avalonia.Controls;
+using System.Threading.Tasks;
 
 namespace apr.Views;
 
@@ -91,11 +91,11 @@ public partial class MainWindow : Window
 
         if (cpRet.path is not null)
         {
-            ConvertImage(cpRet.path, imageServiceDir);
+            await ConvertImage(cpRet.path, imageServiceDir);
         }
     }
 
-    private async void ConvertImage(string imagePath, string imageServiceDir)
+    private async Task<bool> ConvertImage(string imagePath, string imageServiceDir)
     {
         _vm.Loding = true;
         Result ret = await _ns.AddRudolphNoseAsync(imagePath, imageServiceDir);
@@ -109,5 +109,7 @@ public partial class MainWindow : Window
             _vm.SelectedImagePath = new Uri(ret.path).AbsoluteUri;
         }
         _vm.Loding = false;
+
+        return string.IsNullOrEmpty(ret.message);
     }
 }
