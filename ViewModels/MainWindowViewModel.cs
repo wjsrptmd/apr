@@ -4,14 +4,101 @@ using Avalonia.Platform.Storage;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace apr.ViewModels;
 
-public partial class MainWindowViewModel : ViewModelBase
+public class MainWindowViewModel : INotifyPropertyChanged
 {
-    public async Task<CopyResult> OpenAndSaveImageAsync(Window parent)
+    private string? selectedImagePath;
+
+    public string? SelectedImagePath
     {
-        CopyResult result = new CopyResult();
+        get => selectedImagePath;
+        set
+        {
+            if (selectedImagePath != value)
+            {
+                selectedImagePath = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    private string? message;
+
+    public string? Message
+    {
+        get => message;
+        set
+        {
+            if (message != value)
+            {
+                message = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    private bool loding = false;
+
+    public bool Loding
+    {
+        get => loding;
+        set
+        {
+            if (loding != value)
+            {
+                loding = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    protected void OnPropertyChanged([CallerMemberName] string? name = null)
+    {
+        if (PropertyChanged is not null)
+        {
+            Console.WriteLine($"PropertyChanged: {name}");
+            PropertyChanged(this, new PropertyChangedEventArgs(name));
+        }
+        else
+        {
+            Console.WriteLine("PropertyChanged is null");
+        }
+    }
+
+    public async Task<Result> SaveImageAsync(string iamgePath, string ImageServiceDir)
+    {
+        Result result = new Result();
+
+        try
+        {
+            string targetDir = Path.Combine(ImageServiceDir, "Data");
+
+            Directory.CreateDirectory(targetDir);
+
+            string extension = Path.GetExtension(iamgePath);
+            string fileName = $"input{extension}";
+            string targetPath = Path.Combine(targetDir, fileName);
+
+            File.Copy(iamgePath, targetPath, overwrite: true);
+            result.path = targetPath;
+        }
+        catch (Exception ex)
+        {
+            result.message = ex.Message;
+        }
+
+        return result;
+    }
+
+    public async Task<Result> OpenAndSaveImageAsync(Window parent, string imageServiceDir)
+    {
+        Result result = new Result();
 
         try
         {
@@ -41,16 +128,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 return result;
             }
 
-            string baseDir = AppContext.BaseDirectory;
-            string targetDir = Path.Combine(baseDir, "imageData");
-
-            Directory.CreateDirectory(targetDir);
-
-            string fileName = Path.GetFileName(sourcePath);
-            string targetPath = Path.Combine(targetDir, fileName);
-
-            File.Copy(sourcePath, targetPath, overwrite: true);
-            result.path = targetPath;
+            result = await SaveImageAsync(sourcePath, imageServiceDir);
         }
         catch (Exception ex)
         {

@@ -6,13 +6,14 @@ using System.Linq;
 using Avalonia.Markup.Xaml;
 using apr.ViewModels;
 using apr.Views;
-
+using System;
 namespace apr;
 
 public partial class App : Application
 {
     public override void Initialize()
     {
+        Environment.SetEnvironmentVariable("DYLD_LIBRARY_PATH", "/opt/homebrew/opt/opencv/lib", EnvironmentVariableTarget.Process);
         AvaloniaXamlLoader.Load(this);
     }
 
