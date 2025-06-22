@@ -4,3 +4,4 @@ obj/
 .vs/
 .editorconfig
 ImageService/Data
+build.sh

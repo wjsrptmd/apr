@@ -3,6 +3,7 @@ using apr.ViewModels;
 using DotNetEnv;
 using Avalonia.Controls;
 using System.ComponentModel;
+using System.IO;
 
 namespace apr.Views;
 
@@ -12,15 +13,25 @@ public partial class MainWindow : Window
     private readonly NoseOverlayService _ns = new();
 
     private string? imageServiceDir = "";
-    public MainWindow()
+    public MainWindow(string[] args)
     {
         InitializeComponent();
         DataContext = _vm;
 
         _vm.PropertyChanged += VmOnPropertyChanged;
 
-        Env.Load();
-        imageServiceDir = Environment.GetEnvironmentVariable("IMAGESERVICE_DIR");
+        if (args.Length > 0)
+        {
+            imageServiceDir = args[0];
+            // ViewModel 등에 전달 가능
+        }
+        else
+        {
+            string baseDir = AppContext.BaseDirectory;
+            imageServiceDir = Path.Combine(baseDir, "ImageService");
+        }
+
+        Console.WriteLine("IMAGESERVICE_DIR: " + imageServiceDir);
     }
 
     private void VmOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
