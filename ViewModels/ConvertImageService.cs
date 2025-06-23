@@ -23,7 +23,7 @@ public class NoseOverlayService
             // 1. detect_nose 실행
             Console.WriteLine("image path {0}", imagePath);
             string exeName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                ? "detect_nose.py"
+                ? "detect_nose.exe"
                 : "detect_nose";
             Console.WriteLine(exeName);
             string datPath = System.IO.Path.Combine(imageServiceDir, "shape_predictor_68_face_landmarks.dat");
