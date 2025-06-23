@@ -26,13 +26,14 @@ public class NoseOverlayService
                 ? "detect_nose.exe"
                 : "detect_nose";
             Console.WriteLine(exeName);
+            string exeFilePath = System.IO.Path.Combine(imageServiceDir, exeName);
             string datPath = System.IO.Path.Combine(imageServiceDir, "shape_predictor_68_face_landmarks.dat");
 
             var process = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName = System.IO.Path.Combine(imageServiceDir, exeName),
+                    FileName = exeFilePath,
                     Arguments = $"{imagePath} {datPath}",
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
@@ -46,7 +47,7 @@ public class NoseOverlayService
 
             using (var writer = new StreamWriter(logFilePath, append: false))
             {
-                writer.WriteLine($"[Command] {exeName} {imagePath} {datPath}");
+                writer.WriteLine($"[Command] {exeFilePath} {imagePath} {datPath}");
                 writer.WriteLine($"[Timestamp] {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
 
                 process.Start();
