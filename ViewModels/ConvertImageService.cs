@@ -46,6 +46,9 @@ public class NoseOverlayService
 
             using (var writer = new StreamWriter(logFilePath, append: false))
             {
+                writer.WriteLine($"[Command] {exeName} {imagePath} {datPath}");
+                writer.WriteLine($"[Timestamp] {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+
                 process.Start();
 
                 string line;
