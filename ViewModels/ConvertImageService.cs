@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using SixLabors.ImageSharp;
@@ -24,7 +25,9 @@ public class NoseOverlayService
             string exeName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
                 ? "detect_nose.py"
                 : "detect_nose";
+            Console.WriteLine(exeName);
             string datPath = System.IO.Path.Combine(imageServiceDir, "shape_predictor_68_face_landmarks.dat");
+
             var process = new Process
             {
                 StartInfo = new ProcessStartInfo
@@ -36,6 +39,24 @@ public class NoseOverlayService
                     CreateNoWindow = true
                 }
             };
+
+            string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+            string logFileName = $"{timestamp}.log";
+            string logFilePath = System.IO.Path.Combine(imageServiceDir, "Data", logFileName);
+
+            using (var writer = new StreamWriter(logFilePath, append: false))
+            {
+                process.Start();
+
+                string line;
+                while ((line = process.StandardOutput.ReadLine()) is not null)
+                {
+                    writer.WriteLine(line);
+                }
+
+                process.WaitForExit();
+            }
+
 
             Console.WriteLine($"Executing: {process.StartInfo.FileName} {process.StartInfo.Arguments}");
 

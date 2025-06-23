@@ -62,7 +62,6 @@ public class MainWindowViewModel : INotifyPropertyChanged
     {
         if (PropertyChanged is not null)
         {
-            Console.WriteLine($"PropertyChanged: {name}");
             PropertyChanged(this, new PropertyChangedEventArgs(name));
         }
         else
